@@ -8,6 +8,6 @@ namespace Cache_Aside_Pattern.Data
         {
         }
 
-        DbSet<Employee> Employees { get; set; }
+        public DbSet<Employee> Employees { get; set; }
     }
 }
