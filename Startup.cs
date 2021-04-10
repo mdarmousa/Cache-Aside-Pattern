@@ -1,6 +1,8 @@
 using Cache_Aside_Pattern.Cache;
+using Cache_Aside_Pattern.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,8 +27,10 @@ namespace Cache_Aside_Pattern
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMemoryCache();
+            services.AddDbContext<AppDbContext>(item => item.UseSqlServer(Configuration.GetConnectionString("SqlServerConnection")));
+        
 
-            var children = this.Configuration.GetSection("Caching").GetChildren();
+        var children = this.Configuration.GetSection("Caching").GetChildren();
             Dictionary<string, TimeSpan> configuration =
             children.ToDictionary(child => child.Key, child => TimeSpan.Parse(child.Value));
 
