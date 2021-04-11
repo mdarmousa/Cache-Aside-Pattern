@@ -14,7 +14,7 @@ namespace Cache_Aside_Pattern.Controllers
     [Route("[controller]")]
     public class EmployeeController : ControllerBase
     {
-
+        private readonly TimeSpan _timeToLeft = TimeSpan.FromMinutes(5);
         private readonly AppDbContext _appDbContext;
         private readonly ICacheService _cacheService;
 
@@ -34,7 +34,7 @@ namespace Cache_Aside_Pattern.Controllers
                 record = _appDbContext.Employees.FirstOrDefault(x=>x.Id == id);
                 if (record == null) return NotFound();
 
-                _cacheService.Add(record, $"{id}");
+                _cacheService.Add($"{record.Id}", record, _timeToLeft);
             }
 
             return Ok(record);
@@ -47,7 +47,7 @@ namespace Cache_Aside_Pattern.Controllers
             {
                 _appDbContext.Employees.Add(employee);
                 await _appDbContext.SaveChangesAsync();
-                _cacheService.Add(employee, $"{employee.Id}");
+                _cacheService.Add($"{employee.Id}", employee,  _timeToLeft);
             }
             else
             {
@@ -56,7 +56,7 @@ namespace Cache_Aside_Pattern.Controllers
                 if (record == null) return NotFound();
                 _appDbContext.Employees.Update(employee);
                 await _appDbContext.SaveChangesAsync();
-                _cacheService.Add(employee, $"{employee.Id}");
+                _cacheService.Add($"{employee.Id}", employee, _timeToLeft);
             }
 
             return Ok(employee);

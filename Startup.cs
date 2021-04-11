@@ -8,9 +8,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Cache_Aside_Pattern
 {
@@ -29,12 +26,7 @@ namespace Cache_Aside_Pattern
             services.AddMemoryCache();
             services.AddDbContext<AppDbContext>(item => item.UseSqlServer(Configuration.GetConnectionString("SqlServerConnection")));
         
-
-            var children = this.Configuration.GetSection("Caching").GetChildren();
-            Dictionary<string, TimeSpan> configuration =
-            children.ToDictionary(child => child.Key, child => TimeSpan.Parse(child.Value));
-
-            services.AddSingleton<ICacheService>(x => new MemoryCacheService(x.GetService<IMemoryCache>(), configuration));
+            services.AddSingleton<ICacheService>(x => new MemoryCacheService(x.GetService<IMemoryCache>()));
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {

@@ -1,8 +1,5 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Cache_Aside_Pattern.Cache
 {
@@ -10,23 +7,15 @@ namespace Cache_Aside_Pattern.Cache
     public class MemoryCacheService : ICacheService
     {
         private readonly IMemoryCache _memoryCache;
-        private readonly Dictionary<string, TimeSpan> _expirationConfiguration;
-
-        public MemoryCacheService(
-            IMemoryCache memoryCache,
-            Dictionary<string, TimeSpan> expirationConfiguration
-            )
+        public MemoryCacheService(IMemoryCache memoryCache)
         {
             _memoryCache = memoryCache;
-            _expirationConfiguration = expirationConfiguration;
         }
 
-        public void Add<TItem>(TItem item, string key)
+        public void Add<TItem>(string key, TItem item, TimeSpan timeToLeft)
         {
-            var cachedObjectName = item.GetType().Name;
-            var timespan =  _expirationConfiguration[cachedObjectName];
 
-            _memoryCache.Set(key, item, timespan);
+            _memoryCache.Set(key, item, timeToLeft);
         }
 
         public TItem Get<TItem>(string key) where TItem : class
