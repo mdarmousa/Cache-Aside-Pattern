@@ -30,7 +30,7 @@ namespace Cache_Aside_Pattern
             services.AddDbContext<AppDbContext>(item => item.UseSqlServer(Configuration.GetConnectionString("SqlServerConnection")));
         
 
-        var children = this.Configuration.GetSection("Caching").GetChildren();
+            var children = this.Configuration.GetSection("Caching").GetChildren();
             Dictionary<string, TimeSpan> configuration =
             children.ToDictionary(child => child.Key, child => TimeSpan.Parse(child.Value));
 
@@ -38,7 +38,7 @@ namespace Cache_Aside_Pattern
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Cache_Aside_Pattern", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Cache Aside Pattern", Version = "v1" });
             });
         }
 
@@ -49,7 +49,7 @@ namespace Cache_Aside_Pattern
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Cache_Aside_Pattern v1"));
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Cache Aside Pattern v1"));
             }
 
             app.UseHttpsRedirection();

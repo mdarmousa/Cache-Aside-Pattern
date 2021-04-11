@@ -1,6 +1,7 @@
 ﻿using Cache_Aside_Pattern.Cache;
 using Cache_Aside_Pattern.Data;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -23,14 +24,7 @@ namespace Cache_Aside_Pattern.Controllers
             _cacheService = cacheService;
         }
 
-        [HttpGet]
-        public IActionResult Get()
-        {
-            return Ok(_appDbContext.Employees.ToList())
-                ;
-        }
-
-        [HttpGet("{id}")]
+         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
             var record = _cacheService.Get<Employee>($"{id}");
@@ -44,6 +38,28 @@ namespace Cache_Aside_Pattern.Controllers
             }
 
             return Ok(record);
+        }
+
+        [HttpPost()]
+        public async Task<IActionResult> CreateAsync(Employee employee)
+        {
+            if (employee.Id == 0)
+            {
+                _appDbContext.Employees.Add(employee);
+                await _appDbContext.SaveChangesAsync();
+                _cacheService.Add(employee, $"{employee.Id}");
+            }
+            else
+            {
+                var record = _appDbContext.Employees
+                    .AsNoTracking().FirstOrDefault(x => x.Id == employee.Id);
+                if (record == null) return NotFound();
+                _appDbContext.Employees.Update(employee);
+                await _appDbContext.SaveChangesAsync();
+                _cacheService.Add(employee, $"{employee.Id}");
+            }
+
+            return Ok(employee);
         }
     }
 
